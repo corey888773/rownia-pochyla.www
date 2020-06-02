@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta charset="utf-8">
+        <title>Projekt !</title>
+        <link rel="stylesheet" href="projekt.css">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;900&display=swap" rel="stylesheet">
+        
+
+    </head>
+    
+    <body>
+    <div id="calosc">
+        <header><img id="start" src="header.jpg" alt="matematyka">
+        </header>
+        
+        <nav>
+            <a href="#" class="menu active">Projekt</a><a href="#kontakt" class="menu">Kontakt</a><a href="#wypelnij" class="menu">Animacja</a><a href="#" class="menu">coś tu będzie</a>
+        </nav>
+        
+              
+       <section>
+           <ul>
+               <li class="tytul">P</li>
+               <li class="tytul">R</li>
+               <li class="tytul" id="kreciol">O</li>
+               <li class="tytul">J</li>
+               <li class="tytul">E</li>
+               <li class="tytul">K</li>
+               <li class="tytul">T</li>
+           </ul>
+          
+           <p>Animacja przedstawiająca klocek zsuwający się po równi pochyłej.</p>
+           <p>Dane obliczane są z dokładnością do jednej jednostki.</p>
+           
+           <div id="wypelnij">
+               <label>Podaj w metrach długość równi pochyłej.</label>
+               <input id="dl" type="text" ><br>
+
+               <label>Podaj  w stopniach kąt nachylenia równi pochyłej, w stosunku do podłoża.</label>
+               <input id="kat" type="text" ><br>
+               
+               <label>Podaj współczynnik tarcia równi pochyłej (od 0 do 1).</label>
+               <input id="tarcie" min="0" max="1" type="text" ><br>
+               
+               <label>Podaj w kilogramach masę klocka.</label>
+               <input id="masa" type="text" ><br>
+
+               <button id="rysuj">START</button>
+               <button id="klocek" onClick="window.location.reload();" VALUE="Refresh" >RESET</button>
+           </div>
+        
+	
+    
+           <script>
+
+            function scroll(e) {
+
+              var href = $(this).attr('href');
+
+                e.preventDefault();
+
+                $('html, body').animate({
+                    scrollTop: $(href).offset().top
+                }, 800);
+
+                location.hash = href;
+
+            };
+
+            $('a[href*="#"]').click(scroll); 
+            </script>
+
+         
+           
+           <canvas id="js" ></canvas>
+    
+           <script>
+
+                document.getElementById("rysuj")
+               .addEventListener("click", this.rysowanie);
+                document.getElementById("klocek")
+               .addEventListener("click", this.reset)
+                    let wlacz=0;
+                    let reset=0;
+             
+               
+                    function rysowanie(){
+             
+                let kat = document.getElementById("kat").value;
+                let dl = document.getElementById("dl").value;
+                let u = document.getElementById("tarcie").value;
+                let m = document.getElementById("masa").value;
+                dl = parseInt(dl,10);
+                kat = parseInt(kat,10);
+                m = parseInt(m,10);
+                        
+                     function myFunction() {
+                        if((u>1)||(u<0)){
+                        let element1 = document.getElementById("rysuj");
+                        element1.classList.add("zle");
+                        let element2 = document.getElementById("klocek");
+                        element2.classList.add("zle");
+                        alert("WSPÓŁCZYNNIK TARCIA MUSI NALEŻEĆ DO PRZEDZIAŁU <0;1>")}
+                } 
+                        myFunction();
+                   
+                     
+                let canvas = document.getElementById("js");
+                let ctx = canvas.getContext("2d");
+                canvas.width = 800;
+                canvas.height = 800;
+                let cw = canvas.width;
+                let ch = canvas.height;
+                    
+                    let py = 800;
+                    let px = 0;
+                    let k = kat/180 * Math.PI;
+                    const sinkat = Math.sin(k);
+                    const coskat = Math.cos(k);
+                    const tankat = Math.tan(k);
+                    dl += 100*sinkat;
+                    let xdl=dl*coskat;
+                    let ydl=dl*sinkat;
+                    let y1 = py-ydl;
+                    let x1 = xdl-px ;
+                    let a = (py-y1)/(x1-px);
+                    let b = (-1)/a;
+                    let x2 = px+60*coskat;
+                    let y2 = a*(x2-px)+y1;
+                    let x3 = px+30*coskat;
+                    let y3 = (b*(x3-px)+y1);
+                    let x4 = px+90*coskat;
+                    let y4 = (b*(x4-x2)+y2);
+
+                    let ppx=px;
+                    let ppy=py;
+                    let px1=x1;
+                    let py1=y1;    
+            
+               
+                    function tlo(){
+                        ctx.fillStyle = 'black';
+                        ctx.fillRect(0,0,cw,ch);
+                    }
+                        
+
+                    function pochyla(){
+                        ctx.fillStyle = '#E9967A'
+                        ctx.beginPath();
+                        ctx.moveTo(ppx,ppy);
+                        ctx.lineTo(px1,ppy);
+                        ctx.lineTo(ppx, py1);
+                        ctx.closePath();
+                        ctx.fill();
+                        ctx.stroke();
+                    }
+                        
+                    
+                    let klocekx = 0.01*coskat;
+                    let kloceky = 0.01*sinkat;
+                    var t = 0;
+                    let v = 0;
+                    let v1 = 0;
+                    let fc;
+                    let fw;
+                    let ep;
+                    let ek;
+                    let ec;
+                        
+                    function klocek(){
+                        ctx.fillStyle = 'green';
+                        ctx.beginPath();
+                        ctx.moveTo(px,y1);
+                        ctx.lineTo(x2,y2);
+                        ctx.lineTo(x4,y4);
+                        ctx.lineTo(x3, y3);
+                        ctx.closePath();
+                        ctx.fill();
+                        ctx.stroke();
+                        
+                        if (y2<=800){
+                            v = t*9.81;
+                            v1 = v*(sinkat-u*coskat);
+                             
+                            px+=klocekx * v1;
+                            x2+=klocekx * v1;
+                            x3+=klocekx * v1;
+                            x4+=klocekx * v1;
+                            y1+=kloceky * v1;
+                            y2+=kloceky * v1;
+                            y3+=kloceky * v1;
+                            y4+=kloceky * v1;
+                            t+=0.01;
+                            fc = m*9.81;
+                            fw = fc*(sinkat-u*coskat);
+                            ep = m*9.81*(800.36-y2);
+
+                            ek = m*v1*v1/2;
+                        
+                            if(y2>799){
+                                ep=0;
+                            }
+                    } }
+                     
+                    Math.decimal = function(n, k) {
+                        var factor = Math.pow(10, k+1);
+                        n = Math.round(Math.round(n*factor)/10);
+                        return n/(factor/10);
+                    }
+                  
+                    
+                    function czaspredkosc(){
+                        ctx.font="20px Roboto";
+                        ctx.fillStyle ="white";
+                        ctx.fillText("Czas: "+Math.decimal(t,2)+" s",400,30);
+                        ctx.fillText("Prędkość w tej chwili: "+Math.decimal(v1,2)+" m/s",400,60);
+                        ctx.fillText("Energia Potencjalna: " +Math.decimal(ep,0)+" J",400,90);
+                        ctx.fillText("Energia Kinetyczna: " +Math.decimal(ek,0)+" J",400,120);
+                        ctx.fillText("Siła wypadkowa: "+Math.decimal(fw,1)+" N",400,150);
+
+                        
+        
+                    }
+                  
+                    function rysuj(){
+                        tlo();
+                        pochyla();
+                        klocek();
+                        czaspredkosc();
+                     
+                    }
+                   
+                    if((wlacz===0)&&(u<=1)&&(u>=0)){
+                        var interval = setInterval(rysuj,10);}
+                        wlacz+=1;  
+    
+                }
+                   
+               
+           </script>
+ 
+        </section>
+
+        <footer id="kontakt">
+            <p>
+                e-mail: piotrgasiorek773@gmail.com<br>
+                e-mail: gasiorekp02c@lo5.bielsko.pl<br>
+                tel: 721 537 256
+            </p>
+        </footer>
+
+    
+    </div>
+        
+
+    </body>
+
+</html>
+
